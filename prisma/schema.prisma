@@ -24,7 +24,7 @@ model Example {
 enum Role {
     ADMIN
     USER
-    RECEPSIONIST
+    RECEPTIONIST
 }
 
 enum RoomStatus {
