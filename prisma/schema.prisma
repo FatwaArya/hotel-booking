@@ -79,6 +79,7 @@ model Room {
     id          String        @id @default(cuid())
     roomNumber  String
     roomType    RoomType?     @relation(fields: [roomTypeId], references: [id])
+    roomStatus  RoomStatus    @default(AVAILABLE)
     roomTypeId  String?
     Reservation Reservation[]
 
@@ -86,10 +87,9 @@ model Room {
 }
 
 model RoomType {
-    id                String     @id @default(cuid())
+    id                String @id @default(cuid())
     roomName          String
     roomPricePerNight Int
-    roomStatus        RoomStatus @default(AVAILABLE)
     Room              Room[]
 }
 
