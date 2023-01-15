@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure, adminProcedure } from "../trpc";
 
 export const adminRouter = createTRPCRouter({
   hello: publicProcedure
@@ -15,7 +15,7 @@ export const adminRouter = createTRPCRouter({
     return ctx.prisma.example.findMany();
   }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
+  getSecretMessage: adminProcedure.query(() => {
+    return "you can now see this secret admin message!";
   }),
 });

@@ -67,12 +67,27 @@ const AuthShowcase: React.FC = () => {
     { enabled: sessionData?.user !== undefined }
   );
 
+  const { data: adminSecretMessage } = api.admin.getSecretMessage.useQuery(
+    undefined, // no input
+    { enabled: sessionData?.user?.role === "ADMIN" }
+  );
+
+  const { data: receptionistSecretMessage } =
+    api.receptionist.getSecretMessage.useQuery(
+      undefined, // no input
+      { enabled: sessionData?.user?.role === "RECEPTIONIST" }
+    );
+
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
         {sessionData && <span>you are {sessionData.user?.role}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
+
+        {adminSecretMessage && <span> - {adminSecretMessage}</span>}
+        {receptionistSecretMessage && (
+          <span> - {receptionistSecretMessage}</span>
+        )}
       </p>
 
       <button
