@@ -93,8 +93,8 @@ model Reservation {
     roomId     String
     user       User     @relation(fields: [userId], references: [id])
     userId     String
-    startDate  DateTime
-    endDate    DateTime
+    checkIn    DateTime
+    checkOut   DateTime
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     isCanceled Boolean  @default(false)

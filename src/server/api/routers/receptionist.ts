@@ -15,9 +15,7 @@ export const receptionistRouter = createTRPCRouter({
       };
     }),
 
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
+  getAll: publicProcedure.query(({ ctx }) => {}),
 
   getSecretMessage: receptionistProcedure.query(() => {
     return "you can now see this secret receptionist message!";
