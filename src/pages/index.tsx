@@ -2,11 +2,18 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
+import DatePicker from 'react-datepicker'
 
 import { api } from "../utils/api";
+import { forwardRef, useEffect, useState } from 'react'
+import { format, getYear } from "date-fns";
 
 const Home: NextPage = () => {
   const hello = api.user.hello.useQuery({ text: "from tRPC" });
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
 
   return (
     <>
@@ -50,9 +57,120 @@ const Home: NextPage = () => {
             </p>
 
             <AuthShowcase />
+            {/* calenderPicker  */}
+            <div className="flex gap-6">
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date as Date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                renderCustomHeader={({
+                  date,
+                  changeYear,
+                  changeMonth,
+                  decreaseMonth,
+                  increaseMonth,
+                  prevMonthButtonDisabled,
+                  nextMonthButtonDisabled,
+                }) => (
+                  <div className="flex items-center justify-between px-2 py-2">
+                    <span className="text-lg text-gray-700">
+                      {format(date, 'MMMM yyyy')}
+                    </span>
+
+                    <div className="space-x-2">
+                      <button
+                        onClick={decreaseMonth}
+                        disabled={prevMonthButtonDisabled}
+                        type="button"
+                        className={`
+                              ${prevMonthButtonDisabled && 'cursor-not-allowed opacity-50'}
+                              inline-flex p-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500
+                          `}
+                      >
+                        <ChevronLeftIcon className="w-5 h-5 text-gray-600" />
+                      </button>
+
+                      <button
+                        onClick={increaseMonth}
+                        disabled={nextMonthButtonDisabled}
+                        type="button"
+                        className={`
+                              ${nextMonthButtonDisabled && 'cursor-not-allowed opacity-50'}
+                              inline-flex p-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500
+                          `}
+                      >
+                        <ChevronRightIcon className="w-5 h-5 text-gray-600" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date as Date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                renderCustomHeader={({
+                  date,
+                  changeYear,
+                  changeMonth,
+                  decreaseMonth,
+                  increaseMonth,
+                  prevMonthButtonDisabled,
+                  nextMonthButtonDisabled,
+                }) => (
+                  <div className="flex items-center justify-between px-2 py-2">
+                    <span className="text-lg text-gray-700">
+                      {format(date, 'MMMM yyyy')}
+                    </span>
+
+                    <div className="space-x-2">
+                      <button
+                        onClick={decreaseMonth}
+                        disabled={prevMonthButtonDisabled}
+                        type="button"
+                        className={`
+                              ${prevMonthButtonDisabled && 'cursor-not-allowed opacity-50'}
+                              inline-flex p-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500
+                          `}
+                      >
+                        <ChevronLeftIcon className="w-5 h-5 text-gray-600" />
+                      </button>
+
+                      <button
+                        onClick={increaseMonth}
+                        disabled={nextMonthButtonDisabled}
+                        type="button"
+                        className={`
+                              ${nextMonthButtonDisabled && 'cursor-not-allowed opacity-50'}
+                              inline-flex p-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500
+                          `}
+                      >
+                        <ChevronRightIcon className="w-5 h-5 text-gray-600" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              />
+            </div>
+
+
+
+
+
+
+
+
+
+            {/*  */}
           </div>
         </div>
       </main>
+
     </>
   );
 };
@@ -94,3 +212,5 @@ const AuthShowcase: React.FC = () => {
     </div>
   );
 };
+
+
