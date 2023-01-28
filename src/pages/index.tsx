@@ -2,18 +2,25 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
+import { ChevronLeftIcon, ChevronRightIcon, PhotoIcon } from '@heroicons/react/24/solid'
 import DatePicker from 'react-datepicker'
-
+import Image from "next/image";
 import { api } from "../utils/api";
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { format, getYear } from "date-fns";
 
 const Home: NextPage = () => {
   const hello = api.user.hello.useQuery({ text: "from tRPC" });
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const ref = useRef<HTMLInputElement>(null)
 
+  const newRoom = api.receptionist.createRoom.useMutation()
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+
+    }
+  }
 
   return (
     <>
@@ -55,6 +62,7 @@ const Home: NextPage = () => {
             <p className="text-2xl text-white">
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             </p>
+
 
             <AuthShowcase />
             {/* calenderPicker  */}
@@ -166,7 +174,19 @@ const Home: NextPage = () => {
 
 
 
+            {/*  uplload */}
+            <input
+              ref={ref}
+              className="hidden"
+              type="file"
+              multiple />
             {/*  */}
+            <button
+              onClick={() => ref.current?.click()}
+              className="rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500"
+            >
+              <PhotoIcon className="w-6 h-6 text-gray-400" />
+            </button>
           </div>
         </div>
       </main>
@@ -185,22 +205,17 @@ const AuthShowcase: React.FC = () => {
     { enabled: sessionData?.user?.role === "ADMIN" }
   );
 
-  const { data: receptionistSecretMessage } =
-    api.receptionist.getSecretMessage.useQuery(
-      undefined, // no input
-      { enabled: sessionData?.user?.role === "RECEPTIONIST" }
-    );
+
 
   return (
+
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
         {sessionData && <span>you are {sessionData.user?.role}</span>}
 
         {adminSecretMessage && <span> - {adminSecretMessage}</span>}
-        {receptionistSecretMessage && (
-          <span> - {receptionistSecretMessage}</span>
-        )}
+
       </p>
 
       <button

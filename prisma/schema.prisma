@@ -75,6 +75,7 @@ model Room {
     roomType    RoomType?     @relation(fields: [roomTypeId], references: [id])
     roomStatus  RoomStatus    @default(AVAILABLE)
     roomTypeId  String?
+    roomImage   String?
     Reservation Reservation[]
 
     @@index([roomTypeId])
@@ -82,7 +83,7 @@ model Room {
 
 model RoomType {
     id                String @id @default(cuid())
-    roomName          String
+    roomTypeName      String
     roomPricePerNight Int
     Room              Room[]
 }

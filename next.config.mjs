@@ -13,5 +13,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["hotel-room.sgp1.digitaloceanspaces.com", "cdn.discordapp.com"],
+  },
 };
 export default config;
