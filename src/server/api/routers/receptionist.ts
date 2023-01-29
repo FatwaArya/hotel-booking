@@ -51,18 +51,28 @@ export const receptionistRouter = createTRPCRouter({
       }
     }),
 
-  createPresignedUrl: receptionistProcedure.query(async () => {
-    const key = uuidv4();
-    const url = await getSignedUrl(
-      s3Client,
-      new PutObjectCommand({
-        Bucket: "hotel-room",
-        Key: key,
-      })
-    );
-    return {
-      key,
-      url,
-    };
-  }),
+  createPresignedUrl: receptionistProcedure
+    .input(z.object({ count: z.number().gte(1).lte(4) }))
+    .query(async ({ input }) => {
+      const urls = [];
+
+      for (let i = 0; i < input.count; i++) {
+        const key = uuidv4();
+
+        const url = await getSignedUrl(
+          s3Client,
+          new PutObjectCommand({
+            Bucket: "hotel-room",
+            Key: key,
+          })
+        );
+
+        urls.push({
+          url,
+          key,
+        });
+      }
+
+      return urls;
+    }),
 });

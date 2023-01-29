@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 
 
 
+type FileType = { file: File; };
 
 
 const Home: NextPage = () => {
@@ -22,12 +23,18 @@ const Home: NextPage = () => {
   const ref = useRef<HTMLInputElement>(null)
 
 
-  const [previewAttachment, setPreviewAttachment] = useState<File[]>([])
+  const [previewAttachments, setPreviewAttachments] = useState<FileType[]>([])
 
 
   const newRoom = api.receptionist.createRoom.useMutation()
 
   const presignedUrls = api.receptionist.createPresignedUrl.useQuery(
+    {
+      count: previewAttachments.length,
+    },
+    {
+      enabled: previewAttachments.length > 0,
+    }
 
   )
 
@@ -50,47 +57,50 @@ const Home: NextPage = () => {
         //   }
         // }
 
-        newPreviewAttachments.push(file);
+        newPreviewAttachments.push({ file });
       }
-      setPreviewAttachment(newPreviewAttachments);
+      setPreviewAttachments([
+        ...previewAttachments,
+        ...newPreviewAttachments,
+      ]);
     }
   }
 
   const createPost = async () => {
     const uploads: { key: string; ext: string }[] = [];
 
-    if (previewAttachment.length && presignedUrls.data) {
-      for (let i = 0; i < previewAttachment.length; i++) {
-        const file = previewAttachment[i];
-        const data = presignedUrls.data
+    if (previewAttachments.length && presignedUrls.data) {
+      for (let i = 0; i < previewAttachments.length; i++) {
+        const previewAttachment = previewAttachments[i];
+        const data = presignedUrls.data[i];
 
-        if (file && data && data.key && data.url) {
-          const key = data.key[i]
-          const url = data.url[i]
-          const ext = file.name.split(".").pop() as string
 
-          //@ts-ignore
-          await fetch(url, {
+
+
+
+        if (previewAttachment && data && data.key && data.url) {
+          const { file } = previewAttachment;
+
+          await fetch(data.url, {
             method: "PUT",
             body: file,
-            headers: {
-              "Content-Type": file.type,
-            },
+
           });
 
           uploads.push({
             key: data.key,
-            ext
-          })
-
-
+            ext: file.name.split(".").pop() as string,
+          });
         }
+
       }
     }
     newRoom.mutate({
       files: uploads,
     })
   }
+
+
 
   return (
     <>
@@ -266,8 +276,8 @@ const Home: NextPage = () => {
       </main>
 
     </>
-  );
-};
+  )
+}
 
 export default Home;
 
