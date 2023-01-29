@@ -8,6 +8,12 @@ import Image from "next/image";
 import { api } from "../utils/api";
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { format, getYear } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
+
+
+
+
+
 
 const Home: NextPage = () => {
   const hello = api.user.hello.useQuery({ text: "from tRPC" });
@@ -15,11 +21,75 @@ const Home: NextPage = () => {
   const [endDate, setEndDate] = useState(new Date());
   const ref = useRef<HTMLInputElement>(null)
 
+
+  const [previewAttachment, setPreviewAttachment] = useState<File[]>([])
+
+
   const newRoom = api.receptionist.createRoom.useMutation()
+
+  const presignedUrls = api.receptionist.createPresignedUrl.useQuery(
+
+  )
+
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      const newPreviewAttachments = [];
+      for (const file of e.target.files) {
+        // const newFile = {
+        //   file: {
+        //     id: uuidv4(),
+        //     type: "IMAGE",
+        //     url: URL.createObjectURL(file),
+        //     mime: file.type,
+        //     name: file.name,
+        //     extension: file.name.split(".").pop() as string,
+        //     size: file.size,
+        //     height: null,
+        //     width: null,
+        //     createdAt: new Date(),
+        //   }
+        // }
 
+        newPreviewAttachments.push(file);
+      }
+      setPreviewAttachment(newPreviewAttachments);
     }
+  }
+
+  const createPost = async () => {
+    const uploads: { key: string; ext: string }[] = [];
+
+    if (previewAttachment.length && presignedUrls.data) {
+      for (let i = 0; i < previewAttachment.length; i++) {
+        const file = previewAttachment[i];
+        const data = presignedUrls.data
+
+        if (file && data && data.key && data.url) {
+          const key = data.key[i]
+          const url = data.url[i]
+          const ext = file.name.split(".").pop() as string
+
+          //@ts-ignore
+          await fetch(url, {
+            method: "PUT",
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+
+          uploads.push({
+            key: data.key,
+            ext
+          })
+
+
+        }
+      }
+    }
+    newRoom.mutate({
+      files: uploads,
+    })
   }
 
   return (
@@ -179,6 +249,7 @@ const Home: NextPage = () => {
               ref={ref}
               className="hidden"
               type="file"
+              onChange={onFileChange}
               multiple />
             {/*  */}
             <button
@@ -186,6 +257,9 @@ const Home: NextPage = () => {
               className="rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500"
             >
               <PhotoIcon className="w-6 h-6 text-gray-400" />
+            </button>
+            <button onClick={() => { void createPost() }}>
+              upload
             </button>
           </div>
         </div>

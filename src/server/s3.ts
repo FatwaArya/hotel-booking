@@ -3,7 +3,7 @@ import { env } from "../env/server.mjs";
 
 const s3Client = new S3({
   forcePathStyle: false, // Configures to use subdomain/virtual calling format.
-  endpoint: "https://hotel-room.sgp1.digitaloceanspaces.com",
+  endpoint: "https://sgp1.digitaloceanspaces.com",
   region: "sgp1",
   credentials: {
     accessKeyId: env.SPACES_KEY,

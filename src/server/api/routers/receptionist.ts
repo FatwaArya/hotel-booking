@@ -23,7 +23,6 @@ export const receptionistRouter = createTRPCRouter({
   createRoom: receptionistProcedure
     .input(
       z.object({
-        content: z.string(),
         files: z
           .array(
             z.object({
@@ -40,7 +39,6 @@ export const receptionistRouter = createTRPCRouter({
       const files = input.files;
 
       for (const upload of files) {
-        const { key, ext } = upload;
         const uuid = uuidv4();
         const name = uuid + "." + upload.ext;
 
